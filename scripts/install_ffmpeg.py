@@ -3,7 +3,6 @@
 Скачивает официальную сборку с gyan.dev и извлекает ffmpeg.exe и ffprobe.exe в media_downloader/bin.
 """
 
-import io
 import os
 import shutil
 import sys
@@ -28,7 +27,8 @@ def download_progress(block_num, block_size, total_size):
 
 
 def install_ffmpeg():
-    project_root = Path(__file__).resolve().parent
+    # scripts/install_ffmpeg.py -> parent.parent is project root
+    project_root = Path(__file__).resolve().parent.parent
     target_bin = project_root / "media_downloader" / "bin"
     target_bin.mkdir(parents=True, exist_ok=True)
 

@@ -64,15 +64,17 @@
 ```
 MediaDownloader/
 ├── main.py                     # Главная точка входа
-├── install_ffmpeg.py           # Автоматический загрузчик портативного FFmpeg
 ├── requirements.txt            # Зависимости проекта
 │
-└── media_downloader/           # Пакет приложения
-    ├── __init__.py             # Версия пакета
-    ├── bin/                    # Локальные бинарные файлы (ffmpeg.exe, ffprobe.exe)
-    ├── core/                   # Ядро бизнес-логики (Downloader, Spotify, Queue, History)
-    ├── ui/                     # Модульный интерфейс PyQt6 (Окна, Виджеты, Воркеры, Стили)
-    └── utils/                  # Утилиты (FFmpeg, Win32 буфер обмена, форматирование)
+├── media_downloader/           # Пакет приложения
+│   ├── __init__.py             # Версия пакета
+│   ├── bin/                    # Локальные бинарные файлы (ffmpeg.exe, ffprobe.exe)
+│   ├── core/                   # Ядро бизнес-логики (Downloader, Spotify, Queue, History)
+│   ├── ui/                     # Модульный интерфейс PyQt6 (Окна, Виджеты, Воркеры, Стили)
+│   └── utils/                  # Утилиты (FFmpeg, Win32 буфер обмена, форматирование)
+│
+└── scripts/                    # Вспомогательные скрипты
+    └── install_ffmpeg.py       # Автоматический загрузчик портативного FFmpeg
 ```
 
 ---
@@ -104,7 +106,7 @@ pip install -r requirements.txt
 ### Шаг 4. Установка портативного FFmpeg (в один клик)
 В репозиторий встроен автозагрузчик, который скачивает и распаковывает официальную портативную сборку FFmpeg в папку `media_downloader/bin/`:
 ```bash
-python install_ffmpeg.py
+python scripts/install_ffmpeg.py
 ```
 > [!NOTE]
 > Если в вашей системе FFmpeg уже установлен и прописан в системную переменную `PATH`, приложение автоматически обнаружит его.
