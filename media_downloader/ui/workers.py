@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional
 from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtGui import QImage, QPixmap
 
-from media_downloader.history import add_history_entry
+from media_downloader.core import add_history_entry
 from media_downloader.utils import get_default_download_dir
 
 

@@ -20,14 +20,16 @@ from PyQt6.QtWidgets import (
     QStackedWidget, QListWidget, QListWidgetItem, QFrame, QMessageBox
 )
 
-from media_downloader.downloader import MediaDownloader
-from media_downloader.spotify import SpotifyDownloader
-from media_downloader.queue_manager import DownloadQueueManager
-from media_downloader.history import (
-    load_history, clear_history, clean_missing_history_entries
+from media_downloader.core import (
+    MediaDownloader,
+    SpotifyDownloader,
+    DownloadQueueManager,
+    load_history,
+    clear_history,
+    clean_missing_history_entries,
 )
 from media_downloader.theme_manager import PALETTES
-from media_downloader.downloads_view import DownloadsView
+from media_downloader.ui.downloads_view import DownloadsView
 from media_downloader.ui.styles import build_app_stylesheet
 from media_downloader.ui.base_view import BaseDownloadView, DetachedServiceWindow
 from media_downloader.ui.video_views import VideoHubView

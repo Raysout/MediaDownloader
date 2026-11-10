@@ -16,9 +16,11 @@ from PyQt6.QtWidgets import (
     QFrame, QScrollArea, QFileDialog, QMessageBox, QApplication
 )
 
-from media_downloader.downloader import MediaDownloader
-from media_downloader.spotify import SpotifyDownloader
-from media_downloader.queue_manager import DownloadQueueManager
+from media_downloader.core import (
+    MediaDownloader,
+    SpotifyDownloader,
+    DownloadQueueManager,
+)
 from media_downloader.ui.workers import (
     AnalyzeWorker, DownloadWorker, ThumbnailWorker
 )

@@ -28,6 +28,10 @@ from media_downloader.ui.music_views import (
     OtherMusicView,
     MusicHubView,
 )
+from media_downloader.ui.downloads_view import (
+    DownloadCardWidget,
+    DownloadsView,
+)
 from media_downloader.ui.main_window import (
     MediaDownloaderWindow,
     setup_safe_exception_handling,
@@ -54,6 +58,8 @@ __all__ = [
     "YTMusicView",
     "OtherMusicView",
     "MusicHubView",
+    "DownloadCardWidget",
+    "DownloadsView",
     "MediaDownloaderWindow",
     "setup_safe_exception_handling",
     "run_gui",

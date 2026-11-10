@@ -11,9 +11,11 @@ from PyQt6.QtWidgets import (
     QGroupBox, QStackedWidget, QMessageBox
 )
 
-from media_downloader.downloader import MediaDownloader
-from media_downloader.spotify import SpotifyDownloader
-from media_downloader.queue_manager import DownloadQueueManager
+from media_downloader.core import (
+    MediaDownloader,
+    SpotifyDownloader,
+    DownloadQueueManager,
+)
 from media_downloader.ui.base_view import BaseDownloadView
 from media_downloader.ui.widgets import SegmentedButton
 from media_downloader.ui.workers import AnalyzeWorker, ThumbnailWorker

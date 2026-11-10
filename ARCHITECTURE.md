@@ -2,7 +2,7 @@
 
 ## 1. Обзор системы
 
-**Media Downloader Pro** — десктопное приложение для ОС Windows, созданное на базе **Python 3** и графического фреймворка **PyQt6**. Приложение построено по модульному многослойному принципу с четким разделением логики представления (UI), бизнес-логики загрузки и вспомогательных утилит.
+**Media Downloader Pro** — десктопное приложение для ОС Windows, созданное на базе **Python 3** и графического фреймворка **PyQt6**. Приложение построено по модульному многослойному принципу с полным разделением логики представления (UI), бизнес-логики загрузки (Core) и системных утилит (Utils).
 
 ---
 
@@ -35,7 +35,7 @@ graph TD
         BaseView --> Widgets[SegmentedButton]
     end
 
-    subgraph Workers ["Фоновые потоки QThread (workers.py)"]
+    subgraph Workers ["Фоновые потоки QThread (ui/workers.py)"]
         AnalyzeW[AnalyzeWorker]
         DownloadW[DownloadWorker]
         ThumbW[ThumbnailWorker]
@@ -45,10 +45,10 @@ graph TD
         BaseView --> ThumbW
     end
 
-    subgraph Core ["Бизнес-логика и модели данных"]
+    subgraph Core ["Бизнес-логика (media_downloader/core/)"]
         DownEngine[MediaDownloader downloader.py]
         SpotMatcher[SpotifyDownloader spotify.py]
-        QManager[DownloadQueueManager queue_manager.py]
+        QManager[DownloadQueueManager queue.py]
         HistStore[Хранилище истории: history.py]
 
         AnalyzeW --> DownEngine
@@ -59,14 +59,28 @@ graph TD
         QManager --> DownloadW
     end
 
-    subgraph Ext ["Внешние библиотеки и утилиты"]
+    subgraph Utils ["Вспомогательные утилиты (media_downloader/utils/)"]
+        FFmpegUtil[ffmpeg.py - Discovery & Validation]
+        FormatUtil[formatters.py - Speed, Size, Duration]
+        SysUtil[system.py - Path, Clipboard, URL, Filesystem]
+        TagUtil[tagger.py - Mutagen Audio Tags]
+
+        DownEngine --> FFmpegUtil
+        DownEngine --> FormatUtil
+        DownEngine --> SysUtil
+        DownEngine --> TagUtil
+        UI --> SysUtil
+        UI --> FormatUtil
+    end
+
+    subgraph Ext ["Внешние библиотеки и бинарники"]
         YTDLP[yt-dlp]
-        Mutagen[mutagen ID3]
+        Mutagen[mutagen]
         FFmpegBin[FFmpeg / FFprobe bin/]
 
         DownEngine --> YTDLP
-        DownEngine --> FFmpegBin
-        DownEngine --> Mutagen
+        TagUtil --> Mutagen
+        FFmpegUtil --> FFmpegBin
         SpotMatcher --> DownEngine
     end
 ```
@@ -87,29 +101,45 @@ PythonProject/
 ├── ARCHITECTURE.md                 # Описание архитектуры и модулей
 │
 └── media_downloader/               # Основной пакет приложения
-    ├── __init__.py                 # Инициализация пакета
-    ├── main.py                     # Внутренний запуск
-    ├── qt_gui.py                   # Фасад обратной совместимости для UI
-    ├── downloader.py               # Ядро загрузки и постобработки на базе yt-dlp
-    ├── spotify.py                  # Модуль сопоставления метаданных Spotify
-    ├── queue_manager.py            # Диспетчер очереди задач
-    ├── history.py                  # Локальное хранилище истории (атомарный JSON)
-    ├── downloads_view.py           # Экран активных загрузок реального времени
+    ├── __init__.py                 # Метаданные пакета (версия)
+    ├── main.py                     # Внутренняя точка входа
     ├── theme_manager.py            # Менеджер палитр оформления
-    ├── utils.py                    # Утилиты: буфер обмена, FFmpeg, форматирование
     │
     ├── bin/
     │   └── .gitkeep                # Директория под бинарники ffmpeg.exe и ffprobe.exe
     │
-    └── ui/                         # Декомпозированный слой интерфейса PyQt6
-        ├── __init__.py             # Экспорт компонентов слоя представления
-        ├── styles.py               # Генератор QSS стилей под Material 3
-        ├── widgets.py              # Кастомные виджеты (SegmentedButton)
-        ├── workers.py              # Фоновые потоки QThread (Analyze, Download, Thumbnail)
-        ├── base_view.py            # BaseDownloadView и DetachedServiceWindow
-        ├── video_views.py          # Экраны видео: YouTube, TikTok, Другие сервисы, VideoHub
-        ├── music_views.py          # Экраны музыки: Spotify, SoundCloud, YT Music, MusicHub
-        └── main_window.py          # MediaDownloaderWindow и функция run_gui
+    ├── core/                       # Ядро бизнес-логики приложения
+    │   ├── __init__.py             # Экспорт ядра
+    │   ├── downloader.py           # Движок yt-dlp загрузки и конвертации
+    │   ├── spotify.py              # Модуль парсинга Spotify и аудио-сопоставления
+    │   ├── queue.py                # Диспетчер пакетной очереди и задачи DownloadTask
+    │   └── history.py              # Атомарное локальное хранилище истории загрузок
+    │
+    ├── ui/                         # Слой графического интерфейса PyQt6
+    │   ├── __init__.py             # Экспорт компонентов слоя представления
+    │   ├── styles.py               # Генератор QSS стилей под Material 3
+    │   ├── widgets.py              # Кастомные виджеты (SegmentedButton)
+    │   ├── workers.py              # Фоновые потоки QThread (Analyze, Download, Thumbnail)
+    │   ├── base_view.py            # BaseDownloadView и DetachedServiceWindow
+    │   ├── downloads_view.py       # Экран активных загрузок в реальном времени
+    │   ├── video_views.py          # Экраны видео: YouTube, TikTok, Другие сервисы, VideoHub
+    │   ├── music_views.py          # Экраны музыки: Spotify, SoundCloud, YT Music, MusicHub
+    │   └── main_window.py          # Главное окно MediaDownloaderWindow и функция run_gui
+    │
+    ├── utils/                      # Модульный пакет утилит
+    │   ├── __init__.py             # Единый экспорт утилит
+    │   ├── ffmpeg.py               # Обнаружение и валидация FFmpeg/FFprobe
+    │   ├── formatters.py           # Форматирование скорости, размера, длительности
+    │   ├── system.py               # Буфер обмена, директории, санитизация имен файлов
+    │   └── tagger.py               # Запись ID3-тегов и обложек через Mutagen
+    │
+    └── [Фасады обратной совместимости]:
+        ├── qt_gui.py               # Реэкспорт из ui/
+        ├── downloads_view.py       # Реэкспорт из ui/downloads_view
+        ├── downloader.py           # Реэкспорт из core/downloader
+        ├── spotify.py              # Реэкспорт из core/spotify
+        ├── queue_manager.py        # Реэкспорт из core/queue
+        └── history.py              # Реэкспорт из core/history
 ```
 
 ---
@@ -117,12 +147,13 @@ PythonProject/
 ## 4. Архитектурные принципы рефакторинга
 
 1. **Разделение ответственности (Single Responsibility Principle)**:
-   * Монолитный модуль интерфейса `qt_gui.py` декомпозирован на специализированные модули: общие стили (`styles.py`), кастомные виджеты (`widgets.py`), многопоточные обработчики (`workers.py`), базовый класс экранов (`base_view.py`), а также изолированные экраны видео (`video_views.py`) и музыки (`music_views.py`).
+   * **UI-слой (`media_downloader/ui/`)**: Отвечает исключительно за отображение виджетов, анимацию, сбор параметров пользователя и реагирование на события через сигналы Qt.
+   * **Core-слой (`media_downloader/core/`)**: Изолирован от графических библиотек Qt (за исключением сигналов воркеров). Содержит бизнес-логику управления загрузками, очереди, интеграции со Spotify и хранилища истории.
+   * **Utils-слой (`media_downloader/utils/`)**: Набор чистых, переиспользуемых функций без побочных эффектов: форматирование величин, нативный доступ к Win32 буферу обмена, проверка URL и поиск внешних утилит.
 2. **Паттерн Фасад (Facade Pattern)**:
-   * Модуль `media_downloader.qt_gui` сохранен как легкий фасад, который реэкспортирует классы из пакета `ui`. Это гарантирует 100% обратную совместимость с внешними скриптами запуска и сборки.
+   * Все корневые модули (`downloader.py`, `spotify.py`, `queue_manager.py`, `history.py`, `downloads_view.py`, `qt_gui.py`) сохранены как легкие фасады обратной совместимости. Любой существующий внешний код, тесты или сценарии сборки PyInstaller работают без изменений.
 3. **Потокобезопасная асинхронность (Thread Safety & UI Responsiveness)**:
-   * Все длительные сетевые и дисковые операции (извлечение метаданных, загрузка видео/аудио, скачивание обложек, конвертация кодеков) выполняются строго в фоновых потоках `QThread`.
-   * Передача прогресса, статусов и ошибок в GUI осуществляется исключительно через сигналы `pyqtSignal`, что исключает зависание интерфейса.
-4. **Отказоустойчивость и безопасность данных**:
-   * Запись истории в `history.py` производится атомарно через запись во временный файл с последующим замещением, защищая историю от повреждений при внезапном закрытии программы.
-   * Централизованный перехватчик исключений в `setup_safe_exception_handling` предотвращает краши процесса при системных сообщениях Qt.
+   * Все длительные сетевые и дисковые операции выполняются строго в фоновых потоках `QThread`.
+   * Передача прогресса, статусов и ошибок в GUI осуществляется исключительно через потокобезопасные сигналы `pyqtSignal`, что исключает зависание окон.
+4. **Отказоустойчивость и атомарность данных**:
+   * Запись истории в `core/history.py` производится атомарно через временный файл `.tmp` с вызовом `fsync` и заменой `os.replace`, предотвращая потерю данных при сбоях ОС или завершении процесса.
