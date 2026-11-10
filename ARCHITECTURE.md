@@ -93,7 +93,6 @@ graph TD
 PythonProject/
 │
 ├── main.py                         # Корневая точка входа
-├── build_exe.py                    # Скрипт сборки автономного .exe через PyInstaller
 ├── install_ffmpeg.py               # Автозагрузчик портативного FFmpeg
 ├── requirements.txt                # Зависимости проекта
 ├── .gitignore                      # Правила игнорирования Git
