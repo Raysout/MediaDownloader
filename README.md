@@ -74,7 +74,8 @@ MediaDownloader/
 │   └── utils/                  # Утилиты (FFmpeg, Win32 буфер обмена, форматирование)
 │
 └── scripts/                    # Вспомогательные скрипты
-    └── install_ffmpeg.py       # Автоматический загрузчик портативного FFmpeg
+    ├── install_ffmpeg.py       # Автоматический загрузчик портативного FFmpeg
+    └── build_exe.py            # Сборка автономного .exe дистрибутива (PyInstaller)
 ```
 
 ---
@@ -115,6 +116,18 @@ python scripts/install_ffmpeg.py
 ```bash
 python main.py
 ```
+
+---
+
+## 📦 Сборка автономного .EXE файла
+
+Вы можете скомпилировать приложение в портативный `.exe`, который не требует установленного Python на целевом компьютере:
+
+```bash
+python scripts/build_exe.py
+```
+
+Готовый исполняемый файл и библиотеки будут созданы в папке `dist/MediaDownloader/`.
 
 ---
 
