@@ -28,7 +28,7 @@ from media_downloader.core import (
     clear_history,
     clean_missing_history_entries,
 )
-from media_downloader.theme_manager import PALETTES
+from media_downloader.ui.theme_manager import PALETTES
 from media_downloader.ui.downloads_view import DownloadsView
 from media_downloader.ui.styles import build_app_stylesheet
 from media_downloader.ui.base_view import BaseDownloadView, DetachedServiceWindow

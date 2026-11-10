@@ -3,6 +3,7 @@
 """
 
 from media_downloader.ui.styles import build_app_stylesheet
+from media_downloader.ui.theme_manager import PALETTES, hex_to_rgb
 from media_downloader.ui.widgets import SegmentedButton
 from media_downloader.ui.workers import (
     ThumbnailWorker,
@@ -41,6 +42,8 @@ from media_downloader.ui.main_window import (
 
 __all__ = [
     "build_app_stylesheet",
+    "PALETTES",
+    "hex_to_rgb",
     "SegmentedButton",
     "ThumbnailWorker",
     "AnalyzeWorker",
